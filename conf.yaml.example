@@ -1,0 +1,44 @@
+environment:
+  CONFLUENT_METRICS_API_KEY: key
+  CONFLUENT_METRICS_API_SECRET: secret
+  DISABLE_STDOUT_LOGGER: false # Enable flag to disable stdout logger
+  ENABLE_GCP_LOGGER: false # Enable flag to send logs to Google Cloud
+  ENVIRONMENT: development
+  GCP_LOGGER_NAME: confluent-metrics-worker
+  GOOGLE_APPLICATION_CREDENTIALS: '{}'
+  METRIC_NAMESPACE: confluent
+  PORT: 3000
+  SENTRY_DSN: https://xxxxxxxxx@o388880.ingest.sentry.io/1111111
+
+resources:
+  - resource_name: kafka
+	  metrics:
+      - metric_name: confluent_kafka_server_retained_bytes
+        unit: byte
+        filters:
+          - labels:
+              - key: kafka_id
+                value: some-kafka-id
+              - key: topic
+                value: topic-1
+            suffix: prod-topic-1
+      - metric_name: confluent_kafka_server_partition_count
+        filters:
+          - labels:
+              - key: kafka_id
+                value: some-kafka-id
+            suffix: prod
+  - resource_name: connector
+    metrics:
+      - metric_name: confluent_kafka_connect_received_records
+        filters:
+          - labels:
+              - key: connector_id
+                value: some-connector-id
+            suffix: debezium
+      - metric_name: confluent_kafka_connect_dead_letter_queue_records
+        filters:
+          - labels:
+              - key: connector_id
+                value: some-connector-id
+            suffix: debezium
